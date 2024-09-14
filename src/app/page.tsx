@@ -5,7 +5,6 @@ import { Grid, Heart, Share2 } from "lucide-react";
 import Link from "next/link";
 
 export default function LandingPage() {
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-purple-100">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
@@ -13,7 +12,9 @@ export default function LandingPage() {
           InterestGallery
         </Link>
 
-        <Button>Sign Up</Button>
+        <Link href={"/auth/signup"}>
+          <Button>Sign Up</Button>
+        </Link>
       </header>
 
       <main>
