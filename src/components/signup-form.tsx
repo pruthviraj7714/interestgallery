@@ -1,15 +1,37 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function SignupForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+
+    const formData = new FormData(e.currentTarget);
+    console.log(formData);
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
+
+    try {
+      await axios.post("/api/auth/signup", data);
+      toast.success("Account created successfully", {
+        description: "You can now log in with your credentials.",
+      });
+      router.push("/auth/signin");
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || "An error occurred during signup.";
+      toast.error(errorMessage);
+    }
   };
+
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -23,20 +45,24 @@ export default function SignupForm() {
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
           <LabelInputContainer>
             <Label htmlFor="firstname">First name</Label>
-            <Input id="firstname" placeholder="Tony" type="text" />
+            <Input name="firstname" id="firstname" placeholder="Tony" type="text" />
           </LabelInputContainer>
           <LabelInputContainer>
             <Label htmlFor="lastname">Last name</Label>
-            <Input id="lastname" placeholder="Stark" type="text" />
+            <Input name="lastname" id="lastname" placeholder="Stark" type="text" />
           </LabelInputContainer>
         </div>
         <LabelInputContainer className="mb-4">
+          <Label htmlFor="username">Username</Label>
+          <Input name="username" id="username" placeholder="tony43" type="text" />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="tony@gmail.com" type="email" />
+          <Input name="email" id="email" placeholder="tony@gmail.com" type="email" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input name="password" id="password" placeholder="••••••••" type="password" />
         </LabelInputContainer>
 
         <button
@@ -51,7 +77,10 @@ export default function SignupForm() {
       </form>
       <div className="flex justify-center items-center gap-2">
         Already have an account?{" "}
-        <Link className="underline cursor-pointer text-pink-500 font-semibold" href={"/auth/signin"}>
+        <Link
+          className="underline cursor-pointer text-pink-500 font-semibold"
+          href={"/auth/signin"}
+        >
           Log in
         </Link>
       </div>

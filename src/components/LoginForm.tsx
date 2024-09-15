@@ -4,12 +4,46 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function LogInForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
+      toast.success("Signin Successful", {
+        description: "You have successfully signed in.",
+      });
+
+      router.push("/home");
+    } catch (error: any) {
+      toast.error("Signin Failed", {
+        description:
+          error.response?.data?.message ||
+          error.message ||
+          "An unknown error occurred.",
+      });
+    }
   };
+
   return (
     <div className="w-[440px] mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -22,11 +56,21 @@ export default function LogInForm() {
       <form className="my-6" onSubmit={handleSubmit}>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="tony@gmail.com" type="email" />
+          <Input
+            id="email"
+            name="email"
+            placeholder="tony@gmail.com"
+            type="email"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            type="password"
+          />
         </LabelInputContainer>
 
         <button
@@ -40,7 +84,13 @@ export default function LogInForm() {
         <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent h-[1px] w-full" />
       </form>
       <div className="flex justify-center items-center gap-2">
-          Don&apos;t have an account? <Link className="underline cursor-pointer text-pink-500 font-semibold" href={'/auth/signup'}>Sign up</Link>
+        Don&apos;t have an account?{" "}
+        <Link
+          className="underline cursor-pointer text-pink-500 font-semibold"
+          href={"/auth/signup"}
+        >
+          Sign up
+        </Link>
       </div>
     </div>
   );
