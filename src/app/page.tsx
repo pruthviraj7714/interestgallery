@@ -3,10 +3,19 @@
 import { FocusCardsComponent } from "@/components/FocusCards";
 import { Button } from "@/components/ui/button";
 import { Grid, Heart, Share2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function LandingPage() {
+  const session = useSession();
+
+  if(session && session.data?.user) {
+    redirect('/home');
+  }
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-purple-100">
       <header className="container mx-auto px-3 py-5 flex justify-between items-center">
