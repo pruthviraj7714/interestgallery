@@ -104,6 +104,11 @@ export default function CreatePost() {
                 const file = e.target?.files ? e.target.files[0] : null;
                 if (file) {
                   setCurrFile(file);
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setImagePreview(reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
                 }
               }}
               className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"

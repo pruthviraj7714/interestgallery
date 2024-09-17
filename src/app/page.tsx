@@ -15,7 +15,6 @@ export default function LandingPage() {
     redirect('/home');
   }
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-purple-100">
       <header className="container mx-auto px-3 py-5 flex justify-between items-center">
