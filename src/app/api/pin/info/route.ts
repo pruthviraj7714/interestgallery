@@ -16,10 +16,21 @@ export async function GET(req: NextRequest) {
   try {
     const pin = await prisma.post.findFirst({
       where: {
-        id : pinId
+        id: pinId,
       },
       include: {
         user: true,
+        comments: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                firstname: true,
+                lastname: true,
+              },
+            },
+          },
+        },
       },
     });
 
