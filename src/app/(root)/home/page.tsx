@@ -2,7 +2,6 @@
 
 import PinBox from "@/components/PinBox";
 import axios from "axios";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
