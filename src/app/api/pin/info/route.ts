@@ -19,16 +19,26 @@ export async function GET(req: NextRequest) {
         id: pinId,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            username: true,
+            firstname: true,
+            lastname: true,
+          },
+        },
         comments: {
           include: {
             user: {
               select: {
+                id : true,
                 username: true,
                 firstname: true,
                 lastname: true,
               },
             },
+          },
+          orderBy: {
+            createdAt: "desc",
           },
         },
       },

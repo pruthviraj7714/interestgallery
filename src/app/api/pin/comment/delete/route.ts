@@ -27,11 +27,21 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    await prisma.comment.delete({
+    const comment = await prisma.comment.delete({
       where: {
         id: commentId,
+        userId: session.user.id,
       },
     });
+
+    if (!comment) {
+      return NextResponse.json(
+        {
+          message: "You are not authorized to delete this comment!",
+        },
+        { status: 403 }
+      );
+    }
 
     return NextResponse.json({
       message: "Comment Successfully deleted!",
