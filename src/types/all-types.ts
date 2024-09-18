@@ -14,7 +14,7 @@ export interface CommentType {
   id: string;
   postId: string;
   text: string;
-  user: { username: string; firstname: string; lastname: string };
+  user: { id : string; username: string; firstname: string; lastname: string };
   userId: string;
 }
 
@@ -28,6 +28,7 @@ export interface PinType {
   userId: string;
   comments: CommentType[];
   user: {
+    id : string;
     firstname: string;
     lastname: string;
     username: string;
