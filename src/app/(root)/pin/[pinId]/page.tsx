@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   BookmarkIcon,
   Share2Icon,
   MoreHorizontalIcon,
-  UserCircle,
   SendIcon,
+  BookmarkCheckIcon,
+  HeartIcon,
+  HeartOffIcon,
 } from "lucide-react";
 import { PinPageSkeleton } from "@/components/PinPageSkeleton";
 import CommentBox from "@/components/CommentBox";
 import { useRouter } from "next/navigation";
+import { CommentType, PinType } from "@/types/all-types";
+import { useSession } from "next-auth/react";
 
 export default function PinPage({
   params,
@@ -24,8 +27,12 @@ export default function PinPage({
   };
 }) {
   const pinId = params.pinId;
-  const [pinInfo, setPinInfo] = useState<any>(null);
+  const [pinInfo, setPinInfo] = useState<PinType | null>(null);
   const [commentText, setCommentText] = useState<string | null>(null);
+  const [isCommented, setIsCommented] = useState<boolean>(false);
+  const [isDeleted, setIsDeleted] = useState<boolean>(false);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +41,12 @@ export default function PinPage({
       setLoading(true);
       const res = await axios.get(`/api/pin/info?Id=${pinId}`);
       setPinInfo(res.data.pin);
-      console.log(res.data.pin.comments);
+      console.log(res.data.pin);
+      setIsSaved(
+        res.data.pin.savedBy.some(
+          (post: any) => post.userId === session?.user.id
+        )
+      );
     } catch (error: any) {
       toast.error(
         error?.response?.data.message || "Failed to load pin information"
@@ -49,9 +61,10 @@ export default function PinPage({
         text: commentText,
       });
       setCommentText("");
-      router.refresh();
+      setIsCommented(true);
       toast.success("Comment successfully added!");
     } catch (error: any) {
+      console.log(error.message);
       toast.error(error.response.data.message);
     }
   };
@@ -60,16 +73,29 @@ export default function PinPage({
     try {
       await axios.delete(`/api/pin/comment/delete?Id=${commentId}`);
       toast.success("comment successfully deleted!");
+      setIsDeleted(true);
     } catch (error: any) {
-      toast.error(error.reponse.data.message);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const savePin = async () => {
+    try {
+      const res = await axios.post(`/api/pin/save?pinId=${params.pinId}`);
+      toast.success(res.data.message, {position: "bottom-center"});
+      setIsSaved(res.data.isSaved);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     }
   };
 
   useEffect(() => {
     getPinInfo();
-  }, [pinId]);
+    setIsCommented(false);
+    setIsDeleted(false);
+  }, [pinId, isCommented, isDeleted]);
 
-  if (loading) {
+  if (loading || status == "loading") {
     return <PinPageSkeleton />;
   }
 
@@ -77,56 +103,80 @@ export default function PinPage({
     <div className="min-h-screen p-6 bg-gray-100">
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/2 bg-gray-200">
+          <div className="h-[600px] md:w-1/2 bg-transparent">
             <img
               src={pinInfo?.image || "/placeholder.svg?height=600&width=400"}
               alt={pinInfo?.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </div>
-          <div className="md:w-1/2 p-8">
+          <div className="md:w-1/2 p-8 bg-white shadow-lg rounded-xl">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
-                <Button size="icon" variant="ghost">
-                  <MoreHorizontalIcon className="h-6 w-6" />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="hover:bg-gray-100 rounded-full transition-all"
+                >
+                  <MoreHorizontalIcon className="h-6 w-6 text-gray-600" />
                 </Button>
-                <Button size="icon" variant="ghost">
-                  <Share2Icon className="h-6 w-6" />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="hover:bg-gray-100 rounded-full transition-all"
+                >
+                  <Share2Icon className="h-6 w-6 text-gray-600" />
                 </Button>
               </div>
-              <Button className="bg-red-500 hover:bg-red-600 text-white">
-                <BookmarkIcon className="mr-2 h-4 w-4" /> Save
-              </Button>
+
+              <div onClick={savePin}>
+                {!isSaved ? (
+                  <Button className="bg-red-500 hover:bg-red-600 text-white rounded-xl">
+                   Save
+                  </Button>
+                ) : (
+                  <Button className="bg-black hover:bg-black text-white rounded-xl">
+                    Saved
+                  </Button>
+                )}
+              </div>
             </div>
-            <h1 className="text-3xl font-bold mb-4">
+
+            <h1 className="text-4xl font-extrabold text-gray-800 mb-4">
               {pinInfo?.title || "Untitled Pin"}
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 text-lg mb-6">
               {pinInfo?.description || "No description available."}
             </p>
-            <div className="flex items-center space-x-4 mb-6">
-              <Avatar>
-                <AvatarImage src={pinInfo?.user?.avatar} />
-                <AvatarFallback>
-                  <UserCircle className="h-6 w-6" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold">
-                  {pinInfo?.user?.name || "Unknown User"}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {pinInfo?.user?.followers || 0} followers
-                </p>
+
+            <div className="flex items-center space-x-4 mb-6 cursor-pointer">
+              <div className="text-gray-800 h-10 w-10 rounded-full flex justify-center items-center bg-gray-200">
+                {pinInfo?.user.username.charAt(0).toUpperCase()}
               </div>
-              <Button variant="outline">Follow</Button>
+              <p className="font-semibold text-gray-900">
+                {pinInfo?.user?.username || "Unknown User"}
+              </p>
             </div>
-            <div className="border-t pt-6">
-              <h2 className="text-xl font-semibold mb-4">
-                {pinInfo.comments.length ?? 0} Comments
+
+            <div className="border-t border-gray-300 pt-6 max-h-[320px] overflow-auto">
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg shadow-sm">
+                <textarea
+                  className="w-full h-12 p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 transition-shadow resize-none"
+                  placeholder="Add a comment..."
+                  onChange={(e) => setCommentText(e.target.value)}
+                />
+                <button
+                  onClick={addComment}
+                  className="p-2 bg-pink-500 rounded-full text-white hover:bg-pink-600 transition-all focus:outline-none focus:ring-2 focus:ring-pink-400"
+                >
+                  <SendIcon className="w-5 h-5" />
+                </button>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mt-4 mb-4">
+                {pinInfo?.comments.length ?? 0} Comments
               </h2>
               {pinInfo && pinInfo.comments && pinInfo.comments?.length > 0 ? (
-                pinInfo.comments.map((comment: any) => (
+                pinInfo.comments.map((comment: CommentType) => (
                   <CommentBox
                     onDelete={() => deleteComment(comment.id)}
                     key={comment.id}
@@ -134,26 +184,15 @@ export default function PinPage({
                   />
                 ))
               ) : (
-                <div className="flex flex-col my-4">
-                  <span className="font-bold">No comments yet!</span>
-                  <span className="text-gray-600">
-                    No comments yet. Add one to start the conversation.
+                <div className="flex flex-col items-center my-4 text-center">
+                  <span className="font-bold text-gray-800">
+                    No comments yet!
+                  </span>
+                  <span className="text-gray-500">
+                    Be the first to comment and start the conversation.
                   </span>
                 </div>
               )}
-              <div className="flex items-center space-x-3 p-4 bg-gray-100 rounded-lg shadow-md">
-                <textarea
-                  className="w-full h-12 p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 transition-shadow resize-none"
-                  placeholder="Add a comment..."
-                  defaultValue={
-                    (commentText !== null && commentText) || "Add a comment..."
-                  }
-                  onChange={(e) => setCommentText(e.target.value)}
-                />
-                <button className="p-2 bg-pink-500 rounded-full text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400">
-                  <SendIcon onClick={addComment} className="w-5 h-5" />
-                </button>
-              </div>
             </div>
           </div>
         </div>
