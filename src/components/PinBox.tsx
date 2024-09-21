@@ -1,8 +1,9 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { BookmarkIcon, UserCircle } from "lucide-react";
+import { PostType } from "@/types/all-types";
 
-export default function PinBox({ pin }: { pin: any }) {
+export default function PinBox({ pin }: { pin: PostType }) {
   const router = useRouter();
 
   return (
@@ -34,7 +35,7 @@ export default function PinBox({ pin }: { pin: any }) {
         </h3>
         <div className="flex items-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <UserCircle className="h-6 w-6 text-white mr-2" />
-          <span className="text-white text-sm">@{pin?.user?.username}</span>
+          <span className="text-white text-sm">@{pin?.user.username}</span>
         </div>
       </div>
     </div>

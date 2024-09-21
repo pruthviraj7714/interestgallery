@@ -11,7 +11,7 @@ export default function Appbar() {
 
   return (
     <header className="bg-gradient-to-r from-pink-100 via-pink-200 to-pink-300 shadow-lg transition-all duration-300 ease-in-out">
-      <div className="container flex justify-between items-center h-20 px-6">
+      <div className="flex justify-between items-center h-20 px-6">
         <div className="flex items-center gap-6">
           <Link href="/home" className="group">
             <div className="flex items-center gap-2 text-2xl font-bold text-pink-600 transition-colors duration-300 ease-in-out group-hover:text-pink-700">
@@ -33,8 +33,7 @@ export default function Appbar() {
 
         <div>
           <Button
-            variant="ghost"
-            className="bg-pink-500 hover:bg-pink-600 text-white transition-all duration-300 ease-in-out hover:shadow-md"
+            className="bg-pink-400 hover:bg-pink-500 text-white transition-all duration-300 ease-in-out hover:shadow-md"
             onClick={async () => {
               await signOut({ redirect: false })
               router.push('/')
