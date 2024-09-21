@@ -7,6 +7,7 @@ export interface PostType {
   title: string;
   user: { username: string };
   userId: string;
+  isSaved : boolean;
 }
 
 export interface CommentType {

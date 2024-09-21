@@ -9,28 +9,45 @@ import { toast } from "sonner";
 export default function Home() {
   const [posts, setPosts] = useState<PostType[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const getPosts = async () => {
     try {
       const res = await axios.get("/api/pin/all");
-      console.log(res.data.posts);
-
       setPosts(res.data.posts);
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to fetch posts");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const savePin = async (pinId: string) => {
+    try {
+      const res = await axios.post(`/api/pin/save?pinId=${pinId}`);
+      toast.success(res.data.message, { position: "bottom-center" });
+      setPosts((prev: any) =>
+        prev.map((post: PostType) =>
+          post.id === pinId ? { ...post, isSaved: res.data.isSaved } : post
+        )
+      );
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     }
   };
 
   const getUserInfo = async () => {
     try {
       const res = await axios.get("/api/user/info");
-      console.log(res.data);
+      setPosts((prev: any) =>
+        prev?.map((post: PostType) => ({
+          ...post,
+          isSaved:
+            res.data.user?.savedPosts?.some((p: any) => p.postId === post.id) ||
+            false,
+        }))
+      );
     } catch (error: any) {
-      toast.error(error.response.data.message);
-    } finally {
-      setIsLoading(false);
+      toast.error(error.response?.data?.message || "Failed to fetch user info");
     }
   };
 
@@ -39,13 +56,12 @@ export default function Home() {
     getUserInfo();
   }, []);
 
-  if (loading || isLoading) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen space-y-4 p-6">
         <p className="text-lg font-medium text-gray-700">
           We are adding new feed to your gallery...
         </p>
-
         <div className="flex space-x-2">
           <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce"></div>
           <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce delay-50"></div>
@@ -60,7 +76,9 @@ export default function Home() {
       <div className="columns-2 md:columns-3 xl:columns-4">
         {posts &&
           posts.length > 0 &&
-          posts.map((post: PostType) => <PinBox key={post.id} pin={post} />)}
+          posts.map((post: PostType) => (
+            <PinBox key={post.id} pin={post} onSave={() => savePin(post.id)} />
+          ))}
       </div>
     </div>
   );

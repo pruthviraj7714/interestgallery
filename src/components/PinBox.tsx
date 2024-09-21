@@ -1,9 +1,15 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { BookmarkIcon, UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { PostType } from "@/types/all-types";
 
-export default function PinBox({ pin }: { pin: PostType }) {
+export default function PinBox({
+  pin,
+  onSave,
+}: {
+  pin: PostType;
+  onSave: (postId: string) => void;
+}) {
   const router = useRouter();
 
   return (
@@ -11,23 +17,26 @@ export default function PinBox({ pin }: { pin: PostType }) {
       onClick={() => router.push(`/pin/${pin.id}`)}
       className="relative cursor-pointer group overflow-hidden rounded-lg shadow-md transition-transform duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 mb-2"
     >
-      <img
-        src={pin.image}
-        alt={pin.title}
-        className="w-full object-cover"
-      />
+      <img src={pin.image} alt={pin.title} className="w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <Button
+      <div
         onClick={(e) => {
           e.stopPropagation();
+          onSave(pin.id);
         }}
-        className="absolute right-2 top-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-red-500 hover:bg-red-600 shadow-md"
-        size="icon"
+        className="absolute right-3 top-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-red-500 hover:bg-red-600 shadow-md"
       >
-        <BookmarkIcon className="h-4 w-4" />
-        <span className="sr-only">Save</span>
-      </Button>
+        {pin.isSaved ? (
+          <Button className="bg-black hover:bg-black text-white rounded-2xl">
+            Saved
+          </Button>
+        ) : (
+          <Button className="bg-red-500 hover:bg-red-600 text-white rounded-2xl">
+            Save
+          </Button>
+        )}
+      </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <h3 className="text-white font-semibold truncate opacity-0 group-hover:opacity-100 transition-opacity duration-300">
