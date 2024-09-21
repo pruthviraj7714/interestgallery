@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
             lastname: true,
           },
         },
+        savedBy : true,
         comments: {
           include: {
             user: {
