@@ -11,8 +11,13 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white py-10 px-6">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <h2 className="text-2xl font-bold mb-4">InterestGallery</h2>
-          <p className="text-gray-400">
+        <div className="text-2xl font-extrabold">
+              <span className="text-orange-400">
+                Interest
+                <span className="text-pink-400">Gallery</span>
+              </span>
+            </div>
+          <p className="mt-2 text-gray-400">
             Discover and share the world's best ideas. Stay inspired with
             InterestGallery.
           </p>
@@ -22,27 +27,27 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Explore</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/about" className="hover:text-yellow-300 transition">
+              <Link href="/about" className="hover:text-pink-300 transition">
                 About Us
               </Link>
             </li>
             <li>
               <Link
                 href="/contact"
-                className="hover:text-yellow-300 transition"
+                className="hover:text-pink-300 transition"
               >
                 Contact
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="hover:text-yellow-300 transition">
+              <Link href="/terms" className="hover:text-pink-300 transition">
                 Terms of Service
               </Link>
             </li>
             <li>
               <Link
                 href="/privacy"
-                className="hover:text-yellow-300 transition"
+                className="hover:text-pink-300 transition"
               >
                 Privacy Policy
               </Link>
@@ -57,7 +62,7 @@ export default function Footer() {
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-yellow-300 transition"
+              className="text-gray-400 hover:text-pink-300 transition"
             >
               <FaFacebookF size={20} />
             </a>
@@ -65,7 +70,7 @@ export default function Footer() {
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-yellow-300 transition"
+              className="text-gray-400 hover:text-pink-300 transition"
             >
               <FaTwitter size={20} />
             </a>
@@ -73,7 +78,7 @@ export default function Footer() {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-yellow-300 transition"
+              className="text-gray-400 hover:text-pink-300 transition"
             >
               <FaInstagram size={20} />
             </a>
@@ -81,7 +86,7 @@ export default function Footer() {
               href="https://pinterest.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-yellow-300 transition"
+              className="text-gray-400 hover:text-pink-300 transition"
             >
               <FaPinterest size={20} />
             </a>
@@ -96,7 +101,7 @@ export default function Footer() {
               placeholder="Enter your email"
               className="p-2 rounded-md bg-gray-800 border border-gray-700 placeholder-gray-400 text-white"
             />
-            <button className="bg-yellow-300 text-black p-2 rounded-md hover:bg-yellow-400 transition">
+            <button className="bg-pink-300 text-black p-2 rounded-md hover:bg-pink-400 transition">
               Subscribe
             </button>
           </form>

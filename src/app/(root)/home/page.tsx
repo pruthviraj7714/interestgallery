@@ -3,6 +3,7 @@
 import PinBox from "@/components/PinBox";
 import { PostType } from "@/types/all-types";
 import axios from "axios";
+import { LucideLoader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -58,14 +59,12 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen space-y-4 p-6">
-        <p className="text-lg font-medium text-gray-700">
+      <div className="flex flex-col items-center min-h-screen mt-40 space-y-4 p-6">
+        <p className="text-xl font-medium text-gray-700">
           We are adding new feed to your gallery...
         </p>
-        <div className="flex space-x-2">
-          <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce"></div>
-          <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce delay-50"></div>
-          <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce delay-100"></div>
+        <div>
+          <LucideLoader size={35} className="text-pink-500 animate-spin" />
         </div>
       </div>
     );

@@ -11,15 +11,20 @@ import { redirect } from "next/navigation";
 export default function LandingPage() {
   const session = useSession();
 
-  if(session && session.data?.user) {
-    redirect('/home');
+  if (session && session.data?.user) {
+    redirect("/home");
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-purple-100">
-      <header className="container mx-auto px-3 py-5 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-purple-600">
-          InterestGallery
+      <header className="mx-auto px-4 py-3 flex justify-between items-center">
+        <Link href="/" className="">
+          <div className="text-2xl font-extrabold">
+            <span className="text-orange-400">
+              Interest
+              <span className="text-pink-400">Gallery</span>
+            </span>
+          </div>
         </Link>
         <div className="flex items-center gap-4">
           <Link href={"/auth/signup"}>

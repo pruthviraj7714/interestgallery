@@ -3,7 +3,7 @@
 import PinBox2 from "@/components/PinBox2";
 import { PostType } from "@/types/all-types";
 import axios from "axios";
-import { Bookmark } from "lucide-react";
+import { Bookmark, LucideLoader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ export interface SavedPostType {
 
 export default function SavedPinsPage() {
   const [posts, setPosts] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchSavedPosts = async () => {
     try {
@@ -32,6 +33,8 @@ export default function SavedPinsPage() {
       console.log(res.data);
     } catch (error: any) {
       toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,6 +53,19 @@ export default function SavedPinsPage() {
   useEffect(() => {
     fetchSavedPosts();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center min-h-screen mt-40 space-y-4 p-6">
+        <p className="text-xl font-medium text-gray-700">
+          fetching your beautiful picks...
+        </p>
+        <div>
+          <LucideLoader size={35} className="text-pink-500 animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-gray-100 p-6 sm:p-8">

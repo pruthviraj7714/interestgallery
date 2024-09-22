@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { RWebShare } from "react-web-share";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProfileUserTypes {
   email: string;
@@ -32,6 +33,7 @@ export default function ProfilePage({
   const [activeTab, setActiveTab] = useState<"created" | "saved">("created");
   const [createdPosts, setCreatedPosts] = useState<PostType[]>([]);
   const [savedPosts, setSavedPosts] = useState<SavedPostType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
 
   const fetchUserInfo = async () => {
@@ -44,12 +46,43 @@ export default function ProfilePage({
       setSavedPosts(res.data.user.savedPosts);
     } catch (error: any) {
       toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUserInfo();
   }, []);
+
+  if (isLoading || status === "loading") {
+    return (
+      <div className="flex flex-col items-center min-h-screen p-4">
+        <div className="flex flex-col items-center mt-5">
+          <Skeleton className="w-32 h-32 rounded-full bg-gray-200" />
+          <Skeleton className="mt-2 h-6 w-48 bg-gray-200" />
+          <Skeleton className="mt-1 h-5 w-32 bg-gray-200" />
+          <Skeleton className="mt-3 w-24 h-8 bg-gray-300 rounded-full" />
+        </div>
+
+        <div className="flex gap-6 mt-5">
+          <Skeleton className="px-4 py-2 w-20 h-8 bg-gray-200" />
+          <Skeleton className="px-4 py-2 w-20 h-8 bg-gray-200" />
+        </div>
+
+        <div className="w-full mt-6">
+          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 space-y-4 min-h-screen p-6">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="w-full h-64 bg-gray-200 rounded-lg"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4">
@@ -128,7 +161,7 @@ export default function ProfilePage({
               </div>
             )
           ) : (
-            <div className="w-full mt-6">
+            <div className="w-full">
               {savedPosts && savedPosts.length > 0 ? (
                 <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 space-y-4 min-h-screen p-6">
                   {savedPosts.map((savedPost: SavedPostType) => (
