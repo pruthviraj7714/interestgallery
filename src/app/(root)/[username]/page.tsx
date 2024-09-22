@@ -11,8 +11,9 @@ import { Bookmark } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { RWebShare } from "react-web-share";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
-interface ProfileUserTypes {
+export interface ProfileUserTypes {
   email: string;
   firstname: string;
   id: string;
@@ -35,7 +36,7 @@ export default function ProfilePage({
   const [savedPosts, setSavedPosts] = useState<SavedPostType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
-
+  const router = useRouter();
   const fetchUserInfo = async () => {
     try {
       const res = await axios.get(
@@ -96,7 +97,7 @@ export default function ProfilePage({
         <span className="text-gray-600 text-lg mt-1">
           @{userInfo?.username}
         </span>
-        <div>
+        <div className="flex items-center gap-4 mt-3">
           <RWebShare
             data={{
               text: "Like humans, flamingos make friends for life",
@@ -104,10 +105,15 @@ export default function ProfilePage({
               title: "Share with friends & family",
             }}
           >
-            <Button className="mt-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white">
+            <Button className="rounded-full bg-pink-500 hover:bg-pink-600 text-white">
               Share
             </Button>
           </RWebShare>
+          {session?.user.username === params.username && (
+            <Button onClick={() => router.push('/edit-profile') } className="bg-pink-500 rounded-full hover:bg-pink-600 text-white">
+              Edit Profile
+            </Button>
+          )}
         </div>
       </div>
 
