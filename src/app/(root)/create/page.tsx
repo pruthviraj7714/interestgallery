@@ -84,7 +84,7 @@ export default function CreatePost() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-300 flex items-center justify-center p-6">
-      <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-4xl">
+      <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-5xl h-full md:h-[700px]">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Create a New Pin
         </h1>
@@ -118,7 +118,7 @@ export default function CreatePost() {
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="w-full h-64 object-contain rounded-lg"
+                  className="w-full max-h-[450px] object-contain rounded-lg"
                 />
               </div>
             )}

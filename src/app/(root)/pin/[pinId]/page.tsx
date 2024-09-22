@@ -205,6 +205,7 @@ export default function PinPage({
                 <textarea
                   className="w-full h-12 p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 transition-shadow resize-none"
                   placeholder="Add a comment..."
+                  value={commentText as string}
                   onChange={(e) => setCommentText(e.target.value)}
                 />
                 <button

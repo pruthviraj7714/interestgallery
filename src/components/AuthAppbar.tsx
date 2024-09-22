@@ -7,8 +7,11 @@ export default function AuthAppbar() {
     <header className="bg-gradient-to-r from-pink-100 to-pink-300 shadow-lg">
       <div className="container mx-auto flex justify-between items-center h-16 px-6">
         <Link href="/">
-          <div className="text-2xl font-bold text-pink-600  transition-colors duration-300">
-            InterestGallery
+          <div className="text-2xl font-extrabold">
+            <span className="text-orange-400">
+              Interest
+              <span className="text-pink-400">Gallery</span>
+            </span>
           </div>
         </Link>
 
