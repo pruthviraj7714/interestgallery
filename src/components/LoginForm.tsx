@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
@@ -7,13 +7,15 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Loader2Icon } from "lucide-react";
 
 export default function LogInForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -41,6 +43,8 @@ export default function LogInForm() {
           error.message ||
           "An unknown error occurred.",
       });
+    } finally { 
+      setIsLoading(false);
     }
   };
 
@@ -76,8 +80,12 @@ export default function LogInForm() {
         <button
           className="bg-gradient-to-br relative group/btn rounded-xl from-pink-500 to-pink-600 block w-full text-white h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
+          disabled={isLoading}
         >
-          Log in &rarr;
+          {isLoading ? <div className="flex justify-center items-center gap-1">
+            <span>Submitting...</span> <Loader2Icon className="animate-spin" />
+          </div>  : "Log in"}
+          
           <BottomGradient />
         </button>
 

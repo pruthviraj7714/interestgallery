@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
@@ -7,13 +7,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
+import { Loader2Icon } from "lucide-react";
 
 export default function SignupForm() {
   const router = useRouter();
-  
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const formData = new FormData(e.currentTarget);
     console.log(formData);
     const data = Object.fromEntries(formData.entries());
@@ -29,6 +31,8 @@ export default function SignupForm() {
       const errorMessage =
         error?.response?.data?.message || "An error occurred during signup.";
       toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -45,31 +49,64 @@ export default function SignupForm() {
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
           <LabelInputContainer>
             <Label htmlFor="firstname">First name</Label>
-            <Input name="firstname" id="firstname" placeholder="Tony" type="text" />
+            <Input
+              name="firstname"
+              id="firstname"
+              placeholder="Tony"
+              type="text"
+            />
           </LabelInputContainer>
           <LabelInputContainer>
             <Label htmlFor="lastname">Last name</Label>
-            <Input name="lastname" id="lastname" placeholder="Stark" type="text" />
+            <Input
+              name="lastname"
+              id="lastname"
+              placeholder="Stark"
+              type="text"
+            />
           </LabelInputContainer>
         </div>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="username">Username</Label>
-          <Input name="username" id="username" placeholder="tony43" type="text" />
+          <Input
+            name="username"
+            id="username"
+            placeholder="tony43"
+            type="text"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input name="email" id="email" placeholder="tony@gmail.com" type="email" />
+          <Input
+            name="email"
+            id="email"
+            placeholder="tony@gmail.com"
+            type="email"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input name="password" id="password" placeholder="••••••••" type="password" />
+          <Input
+            name="password"
+            id="password"
+            placeholder="••••••••"
+            type="password"
+          />
         </LabelInputContainer>
 
         <button
           className="bg-gradient-to-br relative group/btn rounded-xl from-pink-500 to-pink-600 block 0 w-full text-white h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
+          disabled={isLoading}
         >
-          Sign up &rarr;
+          {isLoading ? (
+            <div className="flex justify-center items-center gap-1">
+              <span>Submitting...</span>{" "}
+              <Loader2Icon className="animate-spin" />
+            </div>
+          ) : (
+            "Sign up"
+          )}
           <BottomGradient />
         </button>
 
