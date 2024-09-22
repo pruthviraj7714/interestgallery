@@ -9,6 +9,7 @@ import PinBox3 from "@/components/PinBox3";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { RWebShare } from "react-web-share";
 
 interface ProfileUserTypes {
   email: string;
@@ -62,9 +63,19 @@ export default function ProfilePage({
         <span className="text-gray-600 text-lg mt-1">
           @{userInfo?.username}
         </span>
-        <Button className="mt-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white">
-          Share
-        </Button>
+        <div>
+          <RWebShare
+            data={{
+              text: "Like humans, flamingos make friends for life",
+              url: `${window.location.protocol}/${params.username}`,
+              title: "Share with friends & family",
+            }}
+          >
+            <Button className="mt-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white">
+              Share
+            </Button>
+          </RWebShare>
+        </div>
       </div>
 
       <div className="flex flex-col items-center mt-5 w-full">
@@ -89,7 +100,7 @@ export default function ProfilePage({
 
         <div className="w-full mt-6">
           {activeTab === "created" ? (
-            createdPosts && createdPosts.length < 0 ? (
+            createdPosts && createdPosts.length > 0 ? (
               <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 space-y-4 min-h-screen p-6">
                 {createdPosts.map((post: PostType) => (
                   <PinBox3 pin={post} key={post.id} />
