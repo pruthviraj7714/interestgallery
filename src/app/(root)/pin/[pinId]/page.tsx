@@ -138,12 +138,12 @@ export default function PinPage({
                         <MoreHorizontalIcon className="h-6 w-6 text-gray-600" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className="bg-gray-200 hover:bg-gray-300 ">
                       <DropdownMenuItem
                         onClick={() => deletePost(params.pinId)}
                         className="cursor-pointer"
                       >
-                        <div className=" hover:text-red-500 ">Delete</div>
+                        <div className="hover:text-red-500">Delete</div>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
