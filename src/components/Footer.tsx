@@ -18,7 +18,7 @@ export default function Footer() {
               </span>
             </div>
           <p className="mt-2 text-gray-400">
-            Discover and share the world's best ideas. Stay inspired with
+            Discover and share the world&apos;s best ideas. Stay inspired with
             InterestGallery.
           </p>
         </div>

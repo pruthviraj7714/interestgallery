@@ -21,7 +21,6 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { ProfileUserTypes } from "../[username]/page";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Loader2, LucideLoader } from "lucide-react";
@@ -40,7 +39,6 @@ const formSchema = z.object({
 });
 
 export default function EditProfilePage() {
-  const [userInfo, setUserInfo] = useState<ProfileUserTypes | null>(null);
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +56,6 @@ export default function EditProfilePage() {
   const fetchUserInfo = async () => {
     try {
       const res = await axios.get("/api/user/info");
-      setUserInfo(res.data.user);
       form.reset(res.data.user);
     } catch (error: any) {
       toast.error(error.response.data.message);

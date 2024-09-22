@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UserCircle, Bookmark } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PostType } from "@/types/all-types";
 

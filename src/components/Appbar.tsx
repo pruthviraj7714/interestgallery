@@ -23,7 +23,7 @@ import {
 import { Button } from "./ui/button";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Heart, Loader2, LogOut, PlusCircle } from "lucide-react";
+import { Loader2, LogOut, PlusCircle } from "lucide-react";
 
 export default function Appbar() {
   const router = useRouter();
