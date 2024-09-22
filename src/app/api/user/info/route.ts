@@ -14,17 +14,15 @@ export async function GET() {
             }, { status : 403})
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where : {
                 id : session.user.id
             },
-            select : {
-                username : true,
-                savedPosts : true,
+            include : {
                 posts : true,
-                firstname : true,
-                lastname : true
-            }
+                savedPosts : true,
+            },
+            
         })
 
         return NextResponse.json({

@@ -36,17 +36,28 @@ export async function POST(req: NextRequest) {
         { status: 411 }
       );
     }
-    await prisma.comment.create({
+    const comment = await prisma.comment.create({
       data: {
         postId: pinId,
         text: text,
         userId: session.user.id,
+      },
+      include: {
+        user: {
+          select: {
+            id : true,
+            username: true,
+            firstname: true,
+            lastname: true,
+          },
+        },
       },
     });
 
     return NextResponse.json(
       {
         message: "Comment Successfully added!",
+        comment,
       },
       { status: 200 }
     );
