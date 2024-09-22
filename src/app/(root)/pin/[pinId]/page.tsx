@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  BookmarkIcon,
-  Share2Icon,
-  MoreHorizontalIcon,
-  SendIcon,
-  BookmarkCheckIcon,
-  HeartIcon,
-  HeartOffIcon,
-} from "lucide-react";
+import { Share2Icon, MoreHorizontalIcon, SendIcon } from "lucide-react";
 import { PinPageSkeleton } from "@/components/PinPageSkeleton";
 import CommentBox from "@/components/CommentBox";
 import { useRouter } from "next/navigation";
 import { CommentType, PinType } from "@/types/all-types";
 import { useSession } from "next-auth/react";
+import { RWebShare } from "react-web-share";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { error } from "console";
 
 export default function PinPage({
   params,
@@ -29,8 +29,6 @@ export default function PinPage({
   const pinId = params.pinId;
   const [pinInfo, setPinInfo] = useState<PinType | null>(null);
   const [commentText, setCommentText] = useState<string | null>(null);
-  const [isCommented, setIsCommented] = useState<boolean>(false);
-  const [isDeleted, setIsDeleted] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -57,12 +55,15 @@ export default function PinPage({
   };
   const addComment = async () => {
     try {
-      await axios.post(`/api/pin/comment?Id=${params.pinId}`, {
+      const res = await axios.post(`/api/pin/comment?Id=${params.pinId}`, {
         text: commentText,
       });
       setCommentText("");
-      setIsCommented(true);
       toast.success("Comment successfully added!");
+      setPinInfo({
+        ...pinInfo,
+        comments: [res.data.comment, ...(pinInfo?.comments || [])],
+      } as PinType);
     } catch (error: any) {
       console.log(error.message);
       toast.error(error.response.data.message);
@@ -73,7 +74,12 @@ export default function PinPage({
     try {
       await axios.delete(`/api/pin/comment/delete?Id=${commentId}`);
       toast.success("comment successfully deleted!");
-      setIsDeleted(true);
+      setPinInfo({
+        ...pinInfo,
+        comments: pinInfo?.comments.filter(
+          (c: CommentType) => c.id !== commentId
+        ),
+      } as PinType);
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
@@ -82,8 +88,18 @@ export default function PinPage({
   const savePin = async () => {
     try {
       const res = await axios.post(`/api/pin/save?pinId=${params.pinId}`);
-      toast.success(res.data.message, {position: "bottom-center"});
+      toast.success(res.data.message, { position: "bottom-center" });
       setIsSaved(res.data.isSaved);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const deletePost = async (pinId: string) => {
+    try {
+      const res = await axios.delete(`/api/pin/delete?pinId=${pinId}`);
+      toast.success(res.data.message);
+      router.push("/home");
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
@@ -91,9 +107,7 @@ export default function PinPage({
 
   useEffect(() => {
     getPinInfo();
-    setIsCommented(false);
-    setIsDeleted(false);
-  }, [pinId, isCommented, isDeleted]);
+  }, [pinId]);
 
   if (loading || status == "loading") {
     return <PinPageSkeleton />;
@@ -113,26 +127,48 @@ export default function PinPage({
           <div className="md:w-1/2 p-8 bg-white shadow-lg rounded-xl">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="hover:bg-gray-100 rounded-full transition-all"
+                {session?.user.id === pinInfo?.userId && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="hover:bg-gray-100 rounded-full transition-all"
+                      >
+                        <MoreHorizontalIcon className="h-6 w-6 text-gray-600" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() => deletePost(params.pinId)}
+                        className="cursor-pointer"
+                      >
+                        <div className=" hover:text-red-500 ">Delete</div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+                <RWebShare
+                  data={{
+                    text: "Like humans, flamingos make friends for life",
+                    url: `${window.location.protocol}/pin/${params.pinId}`,
+                    title: "Share with friends & family",
+                  }}
                 >
-                  <MoreHorizontalIcon className="h-6 w-6 text-gray-600" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="hover:bg-gray-100 rounded-full transition-all"
-                >
-                  <Share2Icon className="h-6 w-6 text-gray-600" />
-                </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="hover:bg-gray-100 rounded-full transition-all"
+                  >
+                    <Share2Icon className="h-6 w-6 text-gray-600" />
+                  </Button>
+                </RWebShare>
               </div>
 
               <div onClick={savePin}>
                 {!isSaved ? (
                   <Button className="bg-red-500 hover:bg-red-600 text-white rounded-xl">
-                   Save
+                    Save
                   </Button>
                 ) : (
                   <Button className="bg-black hover:bg-black text-white rounded-xl">
@@ -149,11 +185,17 @@ export default function PinPage({
               {pinInfo?.description || "No description available."}
             </p>
 
-            <div className="flex items-center space-x-4 mb-6 cursor-pointer">
-              <div className="text-gray-800 h-10 w-10 rounded-full flex justify-center items-center bg-gray-200">
+            <div className="flex items-center space-x-4 mb-6">
+              <div
+                onClick={() => router.push(`/${pinInfo?.user.username}`)}
+                className="cursor-pointer text-gray-800 h-10 w-10 rounded-full flex justify-center items-center bg-gray-200"
+              >
                 {pinInfo?.user.username.charAt(0).toUpperCase()}
               </div>
-              <p className="font-semibold text-gray-900">
+              <p
+                onClick={() => router.push(`/${pinInfo?.user.username}`)}
+                className="cursor-pointer font-semibold text-gray-900"
+              >
                 {pinInfo?.user?.username || "Unknown User"}
               </p>
             </div>
