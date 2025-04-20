@@ -37,7 +37,7 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/interest-gallery.git
+git clone https://github.com/pruthviraj7714/interestgallery.git
 
 # Navigate into the directory
 cd interest-gallery
@@ -49,7 +49,10 @@ npm install
 cp .env.example .env
 
 # Push Prisma schema to your database
-npx prisma db push
+npx prisma migrate dev
+
+# Generate Prisma Client
+npx prisma generate
 
 # Run the development server
 npm run dev
